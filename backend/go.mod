@@ -1,3 +1,5 @@
-module backend
+module github.com/Amane-Fujiwara11/FortuneSpinner/backend
 
-go 1.24.1
+go 1.20
+
+require github.com/go-sql-driver/mysql v1.7.1
