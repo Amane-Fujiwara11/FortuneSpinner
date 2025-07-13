@@ -39,12 +39,12 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Name == "" {
-		respondError(w, http.StatusBadRequest, "Name is required")
+	user, err := model.NewUser(req.Name)
+	if err != nil {
+		respondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	user := model.NewUser(req.Name)
 	if err := h.userRepo.Create(r.Context(), user); err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
