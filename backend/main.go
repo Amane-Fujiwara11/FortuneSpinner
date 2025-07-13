@@ -6,11 +6,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/infrastructure"
 	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/infrastructure/mysql"
-	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/infrastructure/repository"
-	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/interface/handler"
-	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/usecase/gacha"
-	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/usecase/point"
 )
 
 func main() {
@@ -23,26 +20,12 @@ func main() {
 		Database: getEnv("DB_NAME", "fortunespinner"),
 	}
 
-	// Initialize database connection
-	db, err := mysql.NewDB(dbConfig)
+	// Initialize DI container with all dependencies
+	container, err := infrastructure.NewContainer(dbConfig)
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Failed to initialize container: %v", err)
 	}
-	defer db.Close()
-
-	// Initialize repositories
-	userRepo := repository.NewUserRepository(db)
-	gachaRepo := repository.NewGachaRepository(db)
-	pointRepo := repository.NewPointRepository(db)
-
-	// Initialize usecases
-	gachaUsecase := gacha.NewGachaUsecase(gachaRepo, pointRepo, userRepo)
-	pointUsecase := point.NewPointUsecase(pointRepo, userRepo)
-
-	// Initialize handlers
-	userHandler := handler.NewUserHandler(userRepo)
-	gachaHandler := handler.NewGachaHandler(gachaUsecase)
-	pointHandler := handler.NewPointHandler(pointUsecase)
+	defer container.Close()
 
 	// Setup routes
 	mux := http.NewServeMux()
@@ -64,15 +47,15 @@ func main() {
 	}
 
 	// User routes
-	mux.HandleFunc("/api/users", corsHandler(userHandler.CreateUser))
+	mux.HandleFunc("/api/users", corsHandler(container.UserHandler.CreateUser))
 
 	// Gacha routes
-	mux.HandleFunc("/api/gacha/execute", corsHandler(gachaHandler.ExecuteGacha))
-	mux.HandleFunc("/api/gacha/history", corsHandler(gachaHandler.GetGachaHistory))
+	mux.HandleFunc("/api/gacha/execute", corsHandler(container.GachaHandler.ExecuteGacha))
+	mux.HandleFunc("/api/gacha/history", corsHandler(container.GachaHandler.GetGachaHistory))
 
 	// Point routes
-	mux.HandleFunc("/api/points/balance", corsHandler(pointHandler.GetBalance))
-	mux.HandleFunc("/api/points/transactions", corsHandler(pointHandler.GetTransactionHistory))
+	mux.HandleFunc("/api/points/balance", corsHandler(container.PointHandler.GetBalance))
+	mux.HandleFunc("/api/points/transactions", corsHandler(container.PointHandler.GetTransactionHistory))
 
 	// Health check
 	mux.HandleFunc("/health", corsHandler(func(w http.ResponseWriter, r *http.Request) {
