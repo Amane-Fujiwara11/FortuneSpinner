@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/infrastructure/mysql"
+	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/infrastructure/repository"
 	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/interface/handler"
-	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/interface/repository"
 	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/usecase/gacha"
 	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/usecase/point"
 )
