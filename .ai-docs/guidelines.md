@@ -17,13 +17,17 @@ Located in `/backend`, implementing Clean Architecture with the following layers
 
 - **Interface Layer** (`/backend/interface/`)
   - `handler/`: HTTP handlers for REST API
-  - `repository/`: Repository implementations
 
 - **Infrastructure Layer** (`/backend/infrastructure/`)
   - `mysql/`: Database connection and configuration
+  - `repository/`: Repository implementations (moved from interface layer)
+  - `container.go`: Dependency injection container
 
 **Key Features:**
 - Pure Go implementation using only standard library (no web frameworks)
+- Clean Architecture with proper dependency direction (Domain ← UseCase ← Interface ← Infrastructure)
+- Rich domain models with business rules and validation
+- Dependency injection container for clean component initialization
 - Module name: `github.com/Amane-Fujiwara11/FortuneSpinner/backend`
 - Go version: 1.20
 
@@ -141,16 +145,17 @@ npm test
 .
 ├── backend/                    # Go backend application
 │   ├── domain/                # Domain layer (entities, interfaces)
-│   │   ├── model/            # Entity definitions
+│   │   ├── model/            # Entity definitions with business rules
 │   │   └── repository/       # Repository interfaces
 │   ├── usecase/              # Use case layer (business logic)
 │   │   ├── gacha/           # Gacha-related use cases
 │   │   └── point/           # Point-related use cases
 │   ├── interface/            # Interface layer
-│   │   ├── handler/         # HTTP handlers
-│   │   └── repository/      # Repository implementations
+│   │   └── handler/         # HTTP handlers
 │   ├── infrastructure/       # Infrastructure layer
-│   │   └── mysql/          # Database configuration
+│   │   ├── mysql/          # Database configuration
+│   │   ├── repository/     # Repository implementations
+│   │   └── container.go    # Dependency injection container
 │   ├── go.mod               # Go module definition
 │   ├── go.sum               # Go dependencies lock file
 │   ├── main.go              # Application entry point
