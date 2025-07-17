@@ -313,3 +313,9 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 - Frontend nginx serves static files and proxies API calls
 - Backend connects to MySQL using container name
 - Health checks ensure proper startup order
+
+### Security
+- Sensitive information stored in AWS Parameter Store / GCP Secret Manager / Azure Key Vault
+- .env files excluded from version control
+- Production deployment uses environment variables from secure storage
+- Deploy scripts in `/deploy` directory for different environments
