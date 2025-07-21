@@ -47,6 +47,9 @@ export const GachaHistory: React.FC<GachaHistoryProps> = ({ userId, refreshTrigg
   };
 
   const formatDate = (dateString: string): string => {
+    if (!dateString) {
+      return 'No date';
+    }
     return new Date(dateString).toLocaleString();
   };
 

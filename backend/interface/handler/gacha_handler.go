@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/Amane-Fujiwara11/FortuneSpinner/backend/usecase/gacha"
 )
@@ -23,10 +24,11 @@ type ExecuteGachaRequest struct {
 }
 
 type GachaResultResponse struct {
-	ID           int    `json:"id"`
-	ItemName     string `json:"item_name"`
-	Rarity       string `json:"rarity"`
-	PointsEarned int    `json:"points_earned"`
+	ID           int       `json:"id"`
+	ItemName     string    `json:"item_name"`
+	Rarity       string    `json:"rarity"`
+	PointsEarned int       `json:"points_earned"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 func (h *GachaHandler) ExecuteGacha(w http.ResponseWriter, r *http.Request) {
@@ -57,6 +59,7 @@ func (h *GachaHandler) ExecuteGacha(w http.ResponseWriter, r *http.Request) {
 		ItemName:     result.ItemName,
 		Rarity:       result.Rarity.String(),
 		PointsEarned: result.PointsEarned,
+		CreatedAt:    result.CreatedAt,
 	}
 
 	respondSuccess(w, response)
@@ -101,6 +104,7 @@ func (h *GachaHandler) GetGachaHistory(w http.ResponseWriter, r *http.Request) {
 			ItemName:     result.ItemName,
 			Rarity:       result.Rarity.String(),
 			PointsEarned: result.PointsEarned,
+			CreatedAt:    result.CreatedAt,
 		})
 	}
 
