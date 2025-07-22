@@ -13,6 +13,20 @@ export const GachaPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState<number>(0);
 
+  // ローカルストレージからユーザー情報を復元
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (err) {
+        console.error('Failed to parse stored user:', err);
+        localStorage.removeItem('currentUser');
+      }
+    }
+  }, []);
+
   const createUser = async () => {
     if (!userName.trim()) {
       setError('Please enter a name');
@@ -25,6 +39,8 @@ export const GachaPage: React.FC = () => {
       const newUser = await userUsecase.createUser(userName);
       setUser(newUser);
       setUserName('');
+      // ローカルストレージに保存
+      localStorage.setItem('currentUser', JSON.stringify(newUser));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create user');
     } finally {
