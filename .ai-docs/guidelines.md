@@ -2,6 +2,13 @@
 
 FortuneSpinner is a gacha (lottery) web application with a point system. Users can spin the gacha to earn items of different rarities and accumulate points. The project implements Clean Architecture principles in both backend and frontend.
 
+### Key Features
+- **Gacha System**: Probability-based item lottery with 4 rarity tiers
+- **Point System**: Earn points from gacha spins, track balances and transaction history
+- **Clean Architecture**: Separation of concerns across domain, use case, interface, and infrastructure layers
+- **Containerized**: Fully dockerized development and production environments
+- **Type-Safe**: Full TypeScript support in frontend, strongly typed Go backend
+
 ## Architecture
 
 ### Backend (Go)
@@ -52,6 +59,29 @@ Located in `/frontend`, also implementing Clean Architecture:
 - Port: 3306
 - Database name: fortunespinner
 - Tables: users, gacha_results, user_points, point_transactions
+
+## Code Style Guidelines
+
+### General Principles
+- **Follow Clean Architecture**: Keep dependencies pointing inward (Domain ← UseCase ← Interface ← Infrastructure)
+- **No Framework Lock-in**: Backend uses Go standard library, frontend uses minimal dependencies
+- **Type Safety First**: Use proper types in TypeScript, avoid `any`
+- **Error Handling**: Always handle errors explicitly, return meaningful error messages
+- **Consistent Naming**: Use descriptive names, follow language conventions (camelCase for JS/TS, PascalCase for Go types)
+
+### Backend (Go)
+- Use standard Go error handling patterns
+- Keep handlers thin - business logic belongs in use cases
+- Repository interfaces in domain layer, implementations in infrastructure
+- No global variables except for configuration
+- Always validate inputs at the handler level
+
+### Frontend (React/TypeScript)
+- Functional components with hooks
+- Keep components focused and reusable
+- Business logic in use cases, not components
+- Use proper TypeScript types for all API responses
+- Handle loading and error states in all API calls
 
 ## Development Commands
 
@@ -290,6 +320,59 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 - ⏳ User rankings
 - ⏳ More gacha items and animations
 
+## Testing Guidelines
+
+### Backend Testing
+```bash
+cd backend
+go test ./...
+go test -v ./usecase/...  # Test specific package
+go test -cover ./...      # With coverage
+```
+
+### Frontend Testing
+```bash
+cd frontend
+npm test                  # Run all tests
+npm test -- --coverage    # With coverage
+npm test -- --watch       # Watch mode
+```
+
+### Integration Testing
+- Test API endpoints with actual database
+- Use test containers for isolated database instances
+- Mock external services when necessary
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Port Already in Use**
+   ```bash
+   # Find process using port
+   lsof -i :3000  # Frontend
+   lsof -i :8080  # Backend
+   lsof -i :3306  # MySQL
+   
+   # Kill process
+   kill -9 <PID>
+   ```
+
+2. **Database Connection Errors**
+   - Ensure MySQL container is running: `docker ps`
+   - Check logs: `docker-compose logs mysql`
+   - Verify connection string in backend configuration
+
+3. **CORS Issues**
+   - Backend CORS middleware should allow frontend origin
+   - In development, proxy is configured in frontend package.json
+   - In production, nginx handles proxying
+
+4. **Build Failures**
+   - Clear Docker cache: `docker-compose build --no-cache`
+   - Remove node_modules and reinstall: `rm -rf node_modules && npm install`
+   - Update Go dependencies: `go mod tidy`
+
 ## Important Notes
 
 ### Backend
@@ -319,3 +402,86 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 - .env files excluded from version control
 - Production deployment uses environment variables from secure storage
 - Deploy scripts in `/deploy` directory for different environments
+- Input validation at all entry points
+- SQL injection prevention through parameterized queries
+- XSS prevention through proper output escaping
+
+## Contributing Guidelines
+
+### Git Workflow
+1. Create feature branch from main: `git checkout -b feature/your-feature`
+2. Make atomic commits with clear messages
+3. Run tests before committing
+4. Push branch and create pull request
+5. Ensure CI/CD passes before merging
+
+### Commit Message Format
+```
+type(scope): subject
+
+body (optional)
+
+footer (optional)
+```
+
+Types: feat, fix, docs, style, refactor, test, chore
+
+Example:
+```
+feat(gacha): add animation for legendary items
+
+Implemented particle effects and sound for legendary drops
+to enhance user experience.
+
+Closes #123
+```
+
+### Code Review Checklist
+- [ ] Follows Clean Architecture principles
+- [ ] Has appropriate tests
+- [ ] Handles errors properly
+- [ ] Updates documentation if needed
+- [ ] No hardcoded values or secrets
+- [ ] Performance considerations addressed
+- [ ] Accessibility requirements met (frontend)
+
+## Performance Optimization
+
+### Backend
+- Use connection pooling for database
+- Implement caching for frequently accessed data
+- Batch database operations where possible
+- Profile CPU and memory usage regularly
+
+### Frontend
+- Lazy load components and routes
+- Optimize bundle size with code splitting
+- Use React.memo for expensive components
+- Implement virtual scrolling for long lists
+- Optimize images and assets
+
+## Deployment
+
+### Environment Variables
+Required environment variables for each service:
+
+**Backend:**
+- `DB_HOST`: MySQL host
+- `DB_PORT`: MySQL port (default: 3306)
+- `DB_USER`: Database user
+- `DB_PASSWORD`: Database password
+- `DB_NAME`: Database name
+- `PORT`: API server port (default: 8080)
+
+**Frontend:**
+- `REACT_APP_API_URL`: Backend API URL
+- `NODE_ENV`: Environment (development/production)
+
+### Production Checklist
+- [ ] Environment variables configured
+- [ ] Database migrations applied
+- [ ] SSL certificates configured
+- [ ] Monitoring and logging set up
+- [ ] Backup strategy implemented
+- [ ] Rate limiting configured
+- [ ] Health checks passing
