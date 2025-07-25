@@ -82,6 +82,7 @@ Located in `/frontend`, also implementing Clean Architecture:
 - Business logic in use cases, not components
 - Use proper TypeScript types for all API responses
 - Handle loading and error states in all API calls
+- LocalStorage for session persistence (user data saved on creation)
 
 ## Development Commands
 
@@ -212,8 +213,13 @@ npm test
 │   ├── 001_initial_schema.sql  # Initial database schema
 │   └── migrate.sh              # Migration runner script
 │
+├── deploy/                    # Deployment scripts
+│   ├── aws/                  # AWS-specific deployment
+│   ├── local/                # Local development scripts
+│   └── production/           # Production deployment scripts
 ├── docker-compose.yml       # Docker services configuration
 ├── README.md               # Project readme
+├── DEPLOYMENT.md           # Deployment documentation
 └── .ai-docs/              # AI assistant documentation
     └── guidelines.md      # This file
 ```
@@ -312,6 +318,9 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 - ✅ Docker containerization
 - ✅ Database migrations
 - ✅ Responsive UI with animations
+- ✅ LocalStorage for user session persistence (auto-restore on page reload)
+- ✅ Date display formatting in history
+- ✅ AWS deployment infrastructure
 
 ### Pending Features
 - ⏳ Google OAuth login
