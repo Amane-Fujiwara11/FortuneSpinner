@@ -2,15 +2,19 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
-RUN npm ci
+
+# Use npm ci for faster, more reliable installs
+RUN npm ci --only=production && \
+    npm cache clean --force
 
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Install dev dependencies and build
+RUN npm ci && \
+    npm run build
 
 # Production stage
 FROM nginx:alpine

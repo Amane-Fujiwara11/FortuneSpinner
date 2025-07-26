@@ -86,16 +86,25 @@ Located in `/frontend`, also implementing Clean Architecture:
 
 ## Development Commands
 
-### Quick Start
+### Quick Start (Fast Development Mode)
 ```bash
-# 1. Start MySQL
-docker-compose up -d mysql
+# Use the new Makefile for faster development
+make dev      # Start development environment with hot reload
+make dev-logs # View logs
+make stop     # Stop services
+make down     # Remove containers
 
-# 2. Run database migrations (first time only)
-cd migrations && ./migrate.sh
+# Or manually:
+docker-compose -f docker-compose.dev.yml up -d
+```
 
-# 3. Start all services
-docker-compose up -d
+### Production Mode
+```bash
+# Start production environment
+make prod
+
+# Or manually:
+docker-compose up -d --build
 
 # Access the application
 # Frontend: http://localhost:3000
