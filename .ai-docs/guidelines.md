@@ -199,7 +199,8 @@ npm test
 │   ├── go.mod               # Go module definition
 │   ├── go.sum               # Go dependencies lock file
 │   ├── main.go              # Application entry point
-│   └── Dockerfile           # Docker configuration
+│   ├── Dockerfile           # Docker configuration
+│   └── .dockerignore        # Docker build exclusions
 │
 ├── frontend/                  # React frontend application
 │   ├── src/
@@ -213,10 +214,11 @@ npm test
 │   │   ├── App.tsx         # Root component
 │   │   ├── App.css         # Global styles
 │   │   └── index.tsx       # Entry point
-│   ├── package.json         # Node dependencies
+│   ├── package.json         # Node dependencies (includes proxy config)
 │   ├── tsconfig.json        # TypeScript configuration
 │   ├── Dockerfile           # Docker configuration
-│   └── nginx.conf          # Nginx configuration for production
+│   ├── nginx.conf          # Nginx configuration for production
+│   └── .dockerignore        # Docker build exclusions
 │
 ├── migrations/               # Database migrations
 │   ├── 001_initial_schema.sql  # Initial database schema
@@ -226,7 +228,9 @@ npm test
 │   ├── aws/                  # AWS-specific deployment
 │   ├── local/                # Local development scripts
 │   └── production/           # Production deployment scripts
-├── docker-compose.yml       # Docker services configuration
+├── docker-compose.yml       # Docker services configuration (production)
+├── docker-compose.dev.yml   # Docker services configuration (development with hot reload)
+├── Makefile                # Development command shortcuts
 ├── README.md               # Project readme
 ├── DEPLOYMENT.md           # Deployment documentation
 └── .ai-docs/              # AI assistant documentation
