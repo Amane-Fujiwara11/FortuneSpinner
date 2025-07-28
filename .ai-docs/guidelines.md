@@ -98,6 +98,19 @@ make down     # Remove containers
 docker-compose -f docker-compose.dev.yml up -d
 ```
 
+### Makefile Commands
+```bash
+make help           # Show all available commands
+make dev           # Start development environment
+make prod          # Start production environment
+make build         # Build Docker images
+make rebuild       # Force rebuild without cache
+make mysql         # Connect to MySQL CLI
+make backend-logs  # View backend logs
+make frontend-logs # View frontend logs
+make ps            # Show running containers
+```
+
 ### Production Mode
 ```bash
 # Start production environment
@@ -334,6 +347,9 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 - ✅ LocalStorage for user session persistence (auto-restore on page reload)
 - ✅ Date display formatting in history
 - ✅ AWS deployment infrastructure
+- ✅ Fast development mode with hot reload (docker-compose.dev.yml)
+- ✅ Makefile for convenient development commands
+- ✅ Optimized Docker builds with .dockerignore files
 
 ### Pending Features
 - ⏳ Google OAuth login
@@ -395,6 +411,11 @@ npm test -- --watch       # Watch mode
    - Remove node_modules and reinstall: `rm -rf node_modules && npm install`
    - Update Go dependencies: `go mod tidy`
 
+5. **JSON Parse Errors (Frontend)**
+   - Ensure proxy is set in package.json: `"proxy": "http://backend:8080"`
+   - Restart frontend container after adding proxy
+   - Clear browser cache and reload
+
 ## Important Notes
 
 ### Backend
@@ -405,9 +426,10 @@ npm test -- --watch       # Watch mode
 
 ### Frontend
 - API calls go through nginx proxy in production
-- Development uses proxy configuration in package.json
+- Development uses proxy configuration in package.json (`"proxy": "http://backend:8080"`)
 - All API responses must handle potential null values
 - Components follow Clean Architecture separation
+- **Important**: Proxy setting in package.json is required for development API calls
 
 ### Database
 - MySQL runs in Docker with persistent volume
