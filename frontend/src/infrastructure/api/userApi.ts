@@ -8,4 +8,7 @@ export interface CreateUserRequest {
 export const userApi = {
   createUser: (name: string): Promise<User> =>
     apiClient.post<User>('/users', { name }),
+  
+  getUserById: (id: number): Promise<User> =>
+    apiClient.get<User>(`/users/${id}`),
 };

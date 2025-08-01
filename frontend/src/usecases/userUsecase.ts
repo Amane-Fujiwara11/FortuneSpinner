@@ -8,6 +8,13 @@ export class UserUsecase {
     }
     return userApi.createUser(name.trim());
   }
+
+  async getUserById(id: number): Promise<User> {
+    if (!id || id <= 0) {
+      throw new Error('Invalid user ID');
+    }
+    return userApi.getUserById(id);
+  }
 }
 
 export const userUsecase = new UserUsecase();

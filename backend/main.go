@@ -47,7 +47,8 @@ func main() {
 	}
 
 	// User routes
-	mux.HandleFunc("/api/users", corsHandler(container.UserHandler.CreateUser))
+	mux.HandleFunc("/api/users/", corsHandler(container.UserHandler.HandleUsers))
+	mux.HandleFunc("/api/users", corsHandler(container.UserHandler.HandleUsers))
 
 	// Gacha routes
 	mux.HandleFunc("/api/gacha/execute", corsHandler(container.GachaHandler.ExecuteGacha))
