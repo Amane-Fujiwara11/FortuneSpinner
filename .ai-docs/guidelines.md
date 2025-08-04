@@ -8,6 +8,7 @@ FortuneSpinner is a gacha (lottery) web application with a point system. Users c
 - **Clean Architecture**: Separation of concerns across domain, use case, interface, and infrastructure layers
 - **Containerized**: Fully dockerized development and production environments
 - **Type-Safe**: Full TypeScript support in frontend, strongly typed Go backend
+- **URL-Based Sessions**: User sessions persist through page reloads via URL parameters (no localStorage)
 
 ## Architecture
 
@@ -82,7 +83,28 @@ Located in `/frontend`, also implementing Clean Architecture:
 - Business logic in use cases, not components
 - Use proper TypeScript types for all API responses
 - Handle loading and error states in all API calls
-- LocalStorage for session persistence (user data saved on creation)
+- URL-based routing with React Router for session management
+- No localStorage dependency - user state managed via URL parameters
+
+## Application Usage
+
+### User Flow
+1. **Landing Page** (`/`): User enters name and clicks "Start Playing"
+2. **Game Page** (`/user/{id}`): Main game interface with gacha spinner, points, and history
+3. **Session Persistence**: URL contains user ID, allowing page reload without losing state
+4. **New Game**: Click "New Game" button to return to landing page and create new user
+
+### URL Structure
+- `/` - Landing page for user creation
+- `/user/123` - Game page for user with ID 123
+- URLs are bookmarkable and shareable
+- Invalid user IDs automatically redirect to landing page
+
+### Key Features
+- **No localStorage dependency**: All state managed via URL parameters
+- **Page reload safe**: User information fetched from backend using URL user ID  
+- **Clean navigation**: New Game button provides easy way to start over
+- **Error handling**: Graceful fallback to landing page for invalid users
 
 ## Development Commands
 
@@ -221,13 +243,13 @@ npm test
 │   │   ├── usecases/        # Business logic
 │   │   ├── interface/       # UI layer
 │   │   │   ├── components/  # Reusable components
-│   │   │   └── pages/      # Page components
+│   │   │   └── pages/      # Page components (LandingPage, GamePage)
 │   │   ├── infrastructure/  # External services
 │   │   │   └── api/        # API client
-│   │   ├── App.tsx         # Root component
+│   │   ├── App.tsx         # Root component with React Router
 │   │   ├── App.css         # Global styles
 │   │   └── index.tsx       # Entry point
-│   ├── package.json         # Node dependencies (includes proxy config)
+│   ├── package.json         # Node dependencies (includes proxy config + react-router-dom)
 │   ├── tsconfig.json        # TypeScript configuration
 │   ├── Dockerfile           # Docker configuration
 │   ├── nginx.conf          # Nginx configuration for production
@@ -265,6 +287,10 @@ All API endpoints return JSON with the following structure:
 - `POST /api/users` - Create a new user
   - Body: `{"name": "username"}`
   - Returns: User object with ID
+
+- `GET /api/users/{id}` - Get user by ID
+  - Returns: User object with ID and name
+  - Used for session restoration from URL parameters
 
 ### Gacha Operations
 - `POST /api/gacha/execute` - Execute a gacha spin
@@ -344,7 +370,8 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 - ✅ Docker containerization
 - ✅ Database migrations
 - ✅ Responsive UI with animations
-- ✅ LocalStorage for user session persistence (auto-restore on page reload)
+- ✅ URL-based session management (replaces localStorage)
+- ✅ React Router integration for navigation
 - ✅ Date display formatting in history
 - ✅ AWS deployment infrastructure
 - ✅ Fast development mode with hot reload (docker-compose.dev.yml)
@@ -416,6 +443,11 @@ npm test -- --watch       # Watch mode
    - Restart frontend container after adding proxy
    - Clear browser cache and reload
 
+6. **User Not Found Errors**
+   - Check if backend `/api/users/{id}` endpoint is working: `curl http://localhost:8080/api/users/1`
+   - Verify user ID is valid in URL path
+   - Frontend automatically redirects to home page after 3 seconds if user not found
+
 ## Important Notes
 
 ### Backend
@@ -430,6 +462,8 @@ npm test -- --watch       # Watch mode
 - All API responses must handle potential null values
 - Components follow Clean Architecture separation
 - **Important**: Proxy setting in package.json is required for development API calls
+- Uses React Router for URL-based session management
+- No localStorage dependency - user state persisted via URL parameters
 
 ### Database
 - MySQL runs in Docker with persistent volume
